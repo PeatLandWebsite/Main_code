@@ -1,0 +1,6 @@
+geopandas
+matplotlib
+fiona
+gdal
+ogr
+osr
