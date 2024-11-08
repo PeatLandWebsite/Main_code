@@ -4,6 +4,7 @@ from osgeo import ogr
 import pandas as pd
 pd.set_option('display.max_columns',None)
 import matplotlib.pyplot as plt
+import pickle
 
 # Set environment variables for GDAL/PROJ paths
 os.environ['PROJ_LIB'] = 'C:\\Users\\Cheng\\anaconda3\\envs\\code\\Library\\share\\proj'
@@ -16,7 +17,7 @@ parent_directory = os.path.dirname(cur)
 
 # Define the path to the GDB file
 gdb_path = os.path.join(parent_directory , "HFI2021.gdb")
-gdb_path=os.path.join("C:\PeatlandProject", "HFI2021.gdb")
+gdb_path = os.path.join("C:\PeatlandProject", "HFI2021.gdb")
 
 # Open the vector dataset
 vector_ds = ogr.Open(gdb_path)
@@ -44,7 +45,12 @@ for i in range(1, 21):
 
     # Reset the reading position of the layer
 df = pd.DataFrame(data, columns=field_names)
+
+
 df_serialized = df.to_pickle('summary_peatland.pkl')
+
+with open('summary_peatland.pkl', 'rb') as file:
+    df = pickle.load(file)
 
 agg_data = df.groupby(['FEATURE_TY', 'YEAR'])['Shape_Area'].sum().reset_index()
 
@@ -60,3 +66,8 @@ plt.title('Total Shape Area by FEATURE_TY Across Years')
 plt.legend()
 plt.grid(True)
 plt.show()
+
+## Finding Errors
+agg_data.sort_values(by='Shape_Area', ascending=False, inplace=True)
+
+agg_data.head(100)
